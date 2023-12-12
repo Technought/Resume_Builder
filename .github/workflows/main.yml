@@ -3,7 +3,7 @@ name: Generate PDF from LaTeX
 on:
   push:
     branches:
-      - main
+      - main  # Change to your desired branch
 
 jobs:
   build:
@@ -13,14 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install TeX Live
+      - name: Install TeX Live and XeLaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+          sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-fonts-extra
 
-      - name: Compile LaTeX to PDF
+      - name: Compile LaTeX to PDF with XeLaTeX
         run: |
-          pdflatex -interaction=nonstopmode main.tex  # Replace with your actual LaTeX file name
+          xelatex -interaction=nonstopmode main.tex
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v2
