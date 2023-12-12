@@ -2,8 +2,9 @@ name: Generate PDF from LaTeX
 
 on:
   push:
-    branches:
-      - main  # Change to your desired branch
+    paths:
+      - main.tex
+      - rahulworld-resume.cls
 
 jobs:
   build:
@@ -29,5 +30,5 @@ jobs:
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v2
         with:
-          name: generated-pdf
+          name: Resume_Nandan_M
           path: Nandan_M.pdf  # PDF file name
