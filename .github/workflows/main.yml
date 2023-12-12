@@ -22,6 +22,10 @@ jobs:
         run: |
           xelatex -interaction=nonstopmode main.tex
 
+      - name: Rename PDF File
+        run: |
+          mv main.pdf Nandan_M.pdf
+
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v2
         with:
