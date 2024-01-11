@@ -39,6 +39,10 @@ jobs:
             ls -l .
           done
 
+      - name: Install hub
+        run: |
+          sudo snap install hub --classic
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -49,13 +53,11 @@ jobs:
           release_name: Release v${{ github.sha }}
           draft: false
           prerelease: false
+
       - name: Upload Release Asset
         id: upload-release-asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Nandan_M_*.pdf
-          asset_name: Nandan_M_*.pdf
-          asset_content_type: pdf
+        run: |
+          tag_name="${GITHUB_REF##*/}"
+          hub release edit $(find . -type f -name "*.pdf" -printf "-a %p ") -m "" "$tag_name"
