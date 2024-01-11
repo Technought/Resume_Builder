@@ -2,7 +2,7 @@ name: Generate PDF from LaTeX
 
 on:
   workflow_dispatch:
-  
+
   push:
     paths:
       - '**/Roles/*/main.tex'
@@ -20,10 +20,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-fonts-extra
 
+      - name: Determine changed LaTeX files
+        id: changed_files
+        run: |
+          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tex$' || true)
+          echo "Changed LaTeX files: $changed_files"
+          echo "CHANGED_FILES=$changed_files" >> $GITHUB_ENV
+
       - name: Compile LaTeX to PDF and Rename
         run: |
           shopt -s globstar
-          for tex_file in Roles/**/main.tex; do
+          for tex_file in $CHANGED_FILES; do
             parent_folder=$(dirname "$tex_file")
             parent_folder_name=$(basename "$parent_folder")
             xelatex -interaction=nonstopmode "$tex_file"
@@ -31,28 +38,11 @@ jobs:
             mv Nandan_M_"$parent_folder_name".pdf "$parent_folder"
           done
 
-      - name: Get current branch name
-        id: branch_name
-        run: echo "BRANCH_NAME=$(echo $GITHUB_REF | awk -F'/' '{print $NF}')" >> $GITHUB_ENV
-
-      - name: Check if not main/master branch
-        id: not_main_master
-        run: |
-          if [ "${BRANCH_NAME}" != "main" ] && [ "${BRANCH_NAME}" != "master" ]; then
-            echo "Not on main or master branch"
-            echo "SKIP_JOB=false" >> $GITHUB_ENV
-          else
-            echo "On main or master branch. Skipping the job."
-            echo "SKIP_JOB=true" >> $GITHUB_ENV
-          fi
-
       - name: Create GitHub Release
         run: |
-          gh release create -t "Release Nandan_M_${BRANCH_NAME}" -n "Release assets" -F Nandan_M_${BRANCH_NAME}.pdf
+          release_name="Release_$(date +'%Y%m%d%H%M%S')"
+          gh release create "$release_name" Roles/**/Nandan_M*.pdf -t "$release_name" -n "Release assets"
 
-      - name: Delete Previous Releases
+      - name: Clean up - Remove intermediate PDFs
         run: |
-          releases=$(gh release list | awk '{print $1}')
-          for release in $releases; do
-            gh release delete $release -y
-          done
+          find Roles -type f -name "Nandan_M*.pdf" -delete
