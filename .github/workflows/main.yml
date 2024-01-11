@@ -30,9 +30,6 @@ jobs:
             parent_folder=$(dirname "$tex_file")
             parent_folder_name=$(basename "$parent_folder")
 
-            echo "Compiling $tex_file in $parent_folder"
-            ls -l "$parent_folder"
-
             # Set the working directory to the parent folder
             cd "$parent_folder"
 
@@ -42,6 +39,7 @@ jobs:
 
             # Return to the repository root
             cd -
+            ls -l .
           done
 
       - name: Create GitHub Release
