@@ -23,12 +23,27 @@ jobs:
         run: |
           xelatex -interaction=nonstopmode main.tex
 
+      - name: Get current branch name
+        id: branch_name
+        run: echo "::set-output name=name::$(echo $GITHUB_REF | awk -F'/' '{print $NF}')"
+
+      - name: Check if not main/master branch
+        id: not_main_master
+        run: |
+          if [ "${{ steps.branch_name.outputs.name }}" != "main" ] && [ "${{ steps.branch_name.outputs.name }}" != "master" ]; then
+            echo "Not on main or master branch"
+            echo "::set-output name=skip::false"
+          else
+            echo "On main or master branch. Skipping the job."
+            echo "::set-output name=skip::true"
+          fi
+
       - name: Rename PDF File
         run: |
-          mv main.pdf Nandan_M.pdf
+          mv main.pdf Nandan_M_${{ steps.branch_name.outputs.name }}.pdf
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v2
         with:
-          name: Resume_Nandan_M
-          path: Nandan_M.pdf  # PDF file name
+          name: Resume_Nandan_M_${{ steps.branch_name.outputs.name }}
+          path: Nandan_M_${{ steps.branch_name.outputs.name }}.pdf
