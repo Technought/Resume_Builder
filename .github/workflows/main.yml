@@ -60,4 +60,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag_name="${GITHUB_REF##*/}"
-          hub release edit $(find . -type f -name "*.pdf" -printf "-a %p ") -m "" "$tag_name"
+          hub release edit $(find . -type f -name "*.pdf" -printf "-a %p ") -m "" "v${{ github.sha }}"
