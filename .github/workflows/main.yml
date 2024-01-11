@@ -23,29 +23,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-fonts-extra
 
-      - name: Determine changed LaTeX files
-        id: changed_files
-        run: |
-          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tex$' || true)
-          echo "Changed LaTeX files: $changed_files"
-          echo "CHANGED_FILES=$changed_files" >> $GITHUB_ENV
-
-      - name: Compile LaTeX to PDF and Rename
-        run: |
-          shopt -s globstar
-          for tex_file in $CHANGED_FILES; do
-            parent_folder=$(dirname "$tex_file")
-            parent_folder_name=$(basename "$parent_folder")
-            xelatex -interaction=nonstopmode "$tex_file"
-            mv main.pdf Nandan_M_"$parent_folder_name".pdf
-            mv Nandan_M_"$parent_folder_name".pdf "$parent_folder"
-          done
-
+          - name: Compile LaTeX to PDF and Rename
+          run: |
+            shopt -s globstar
+            for tex_file in Roles/**/main.tex; do
+              parent_folder=$(dirname "$tex_file")
+              parent_folder_name=$(basename "$parent_folder")
+              xelatex -interaction=nonstopmode "$tex_file"
+              mv main.pdf Nandan_M_"$parent_folder_name".pdf
+              mv Nandan_M_"$parent_folder_name".pdf "$parent_folder"
+            done
+  
       - name: Create GitHub Release
         run: |
           release_name="Release_$(date +'%Y%m%d%H%M%S')"
           gh release create "$release_name" Roles/**/Nandan_M*.pdf -t "$release_name" -n "Release assets"
-
+  
       - name: Clean up - Remove intermediate PDFs
         run: |
           find Roles -type f -name "Nandan_M*.pdf" -delete
