@@ -2,7 +2,7 @@ name: Generate PDF from LaTeX
 
 on:
   workflow_dispatch:
-
+  
   push:
     paths:
       - '**/Roles/*/main.tex'
@@ -54,10 +54,13 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Set Tag Name Output
+        id: set_tag_name
+        run: echo "TAG_NAME=v${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Upload Release Assets
+        id: upload_release_assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag_name="${GITHUB_REF##*/}"
-          hub release edit $(find . -type f -name "*.pdf" -printf "-a %p ") -m "" "v${{ github.sha }}"
+          hub release edit $(find . -type f -name "*.pdf" -printf "-a %p ") -m "" "${{ env.TAG_NAME }}"
