@@ -27,6 +27,12 @@ jobs:
         run: |
           shopt -s globstar
           for tex_file in Roles/**/main.tex; do
+            echo "TeX file: $tex_file"
+            echo "Parent folder: $parent_folder"
+            echo "Parent folder name: $parent_folder_name"
+            echo "Compiling $tex_file in $parent_folder"
+            ls -l "$parent_folder"
+
             parent_folder=$(dirname "$tex_file")
             parent_folder_name=$(basename "$parent_folder")
             xelatex -interaction=nonstopmode "$tex_file"
