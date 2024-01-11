@@ -45,9 +45,15 @@ jobs:
         run: |
           mv main.pdf Nandan_M_${BRANCH_NAME}.pdf
 
-      - name: Upload PDF artifact
+      - name: Create GitHub Release
         if: env.SKIP_JOB != 'true'
-        uses: actions/upload-artifact@v2
-        with:
-          name: Resume_Nandan_M_${BRANCH_NAME}
-          path: Nandan_M_${BRANCH_NAME}.pdf
+        run: |
+          gh release create -t "Release Nandan_M_${BRANCH_NAME}" -n "Release assets" -F Nandan_M_${BRANCH_NAME}.pdf
+
+      - name: Delete Previous Releases
+        if: env.SKIP_JOB != 'true'
+        run: |
+          releases=$(gh release list | awk '{print $1}')
+          for release in $releases; do
+            gh release delete $release -y
+          done
