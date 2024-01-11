@@ -5,8 +5,8 @@ on:
   
   push:
     paths:
-      - main.tex
-      - rahulworld-resume.cls
+      - '**/main.tex'
+      - '**/rahulworld-resume.cls'
 
 jobs:
   build:
@@ -27,25 +27,27 @@ jobs:
 
       - name: Get current branch name
         id: branch_name
-        run: echo "::set-output name=name::$(echo $GITHUB_REF | awk -F'/' '{print $NF}')"
+        run: echo "BRANCH_NAME=$(echo $GITHUB_REF | awk -F'/' '{print $NF}')" >> $GITHUB_ENV
 
       - name: Check if not main/master branch
         id: not_main_master
         run: |
-          if [ "${{ steps.branch_name.outputs.name }}" != "main" ] && [ "${{ steps.branch_name.outputs.name }}" != "master" ]; then
+          if [ "${BRANCH_NAME}" != "main" ] && [ "${BRANCH_NAME}" != "master" ]; then
             echo "Not on main or master branch"
-            echo "::set-output name=skip::false"
+            echo "SKIP_JOB=false" >> $GITHUB_ENV
           else
             echo "On main or master branch. Skipping the job."
-            echo "::set-output name=skip::true"
+            echo "SKIP_JOB=true" >> $GITHUB_ENV
           fi
 
       - name: Rename PDF File
+        if: env.SKIP_JOB != 'true'
         run: |
-          mv main.pdf Nandan_M_${{ steps.branch_name.outputs.name }}.pdf
+          mv main.pdf Nandan_M_${BRANCH_NAME}.pdf
 
       - name: Upload PDF artifact
+        if: env.SKIP_JOB != 'true'
         uses: actions/upload-artifact@v2
         with:
-          name: Resume_Nandan_M_${{ steps.branch_name.outputs.name }}
-          path: Nandan_M_${{ steps.branch_name.outputs.name }}.pdf
+          name: Resume_Nandan_M_${BRANCH_NAME}
+          path: Nandan_M_${BRANCH_NAME}.pdf
