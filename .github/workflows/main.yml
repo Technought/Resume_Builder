@@ -5,8 +5,7 @@ on:
   
   push:
     paths:
-      - '**/main.tex'
-      - '**/rahulworld-resume.cls'
+      - '**/Roles/*/main.tex'
 
 jobs:
   build:
