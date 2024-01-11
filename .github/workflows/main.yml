@@ -47,7 +47,7 @@ jobs:
       - name: Create GitHub Release
         run: |
           release_name="Release_$(date +'%Y%m%d%H%M%S')"
-          gh release create "$release_name" Roles/**/Nandan_M*.pdf -t "$release_name" -n "Release assets"
+          gh release create "$release_name" Nandan_M*.pdf -t "$release_name" -n "Release assets"
 
       - name: Clean up - Remove intermediate PDFs
         run: |
