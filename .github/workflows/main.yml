@@ -1,6 +1,8 @@
 name: Generate PDF from LaTeX
 
 on:
+  workflow_dispatch:
+  
   push:
     paths:
       - main.tex
