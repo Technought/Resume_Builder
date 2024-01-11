@@ -11,9 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -43,10 +40,22 @@ jobs:
           done
 
       - name: Create GitHub Release
-        run: |
-          release_name="Release_$(date +'%Y%m%d%H%M%S')"
-          gh release create "$release_name" Nandan_M*.pdf -t "$release_name" -n "Release assets"
-
-      - name: Clean up - Remove intermediate PDFs
-        run: |
-          find Roles -type f -name "Nandan_M*.pdf" -delete
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Nandan_M_*.pdf
+          asset_name: Nandan_M_*.pdf
+          asset_content_type: pdf
