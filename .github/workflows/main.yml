@@ -35,7 +35,7 @@ jobs:
 
             xelatex -interaction=nonstopmode main.tex
             mv main.pdf Nandan_M_"$parent_folder_name".pdf
-            mv Nandan_M_"$parent_folder_name".pdf -/Nandan_M_"$parent_folder_name".pdf
+            mv Nandan_M_"$parent_folder_name".pdf ../..
 
             # Return to the repository root
             cd -
