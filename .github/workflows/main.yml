@@ -21,9 +21,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-fonts-extra
 
-      - name: Compile LaTeX to PDF with XeLaTeX
+      - name: Compile LaTeX to PDF and Rename
         run: |
-          xelatex -interaction=nonstopmode main.tex
+          shopt -s globstar
+          for tex_file in Roles/**/main.tex; do
+            parent_folder=$(dirname "$tex_file")
+            parent_folder_name=$(basename "$parent_folder")
+            xelatex -interaction=nonstopmode "$tex_file"
+            mv main.pdf Nandan_M_"$parent_folder_name".pdf
+            mv Nandan_M_"$parent_folder_name".pdf "$parent_folder"
+          done
 
       - name: Get current branch name
         id: branch_name
@@ -40,18 +47,11 @@ jobs:
             echo "SKIP_JOB=true" >> $GITHUB_ENV
           fi
 
-      - name: Rename PDF File
-        if: env.SKIP_JOB != 'true'
-        run: |
-          mv main.pdf Nandan_M_${BRANCH_NAME}.pdf
-
       - name: Create GitHub Release
-        if: env.SKIP_JOB != 'true'
         run: |
           gh release create -t "Release Nandan_M_${BRANCH_NAME}" -n "Release assets" -F Nandan_M_${BRANCH_NAME}.pdf
 
       - name: Delete Previous Releases
-        if: env.SKIP_JOB != 'true'
         run: |
           releases=$(gh release list | awk '{print $1}')
           for release in $releases; do
