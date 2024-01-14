@@ -32,7 +32,7 @@ jobs:
           # Delete all tags
           tags=$(git tag -l)
           for tag in $tags; do
-            git push --delete origin $tag
+            git push origin --delete $tag
           done
 
       - name: Install TeX Live and XeLaTeX
