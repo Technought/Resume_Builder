@@ -19,22 +19,6 @@ jobs:
         run: |
           sudo snap install hub --classic
 
-      - name: Delete Previous Releases and Tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Delete all releases
-          releases=$(hub release -L | cut -f1)
-          for release in $releases; do
-            hub release delete $release
-          done
-
-          # Delete all tags
-          tags=$(git tag -l)
-          for tag in $tags; do
-            git push --delete origin $tag
-          done
-
       - name: Install TeX Live and XeLaTeX
         run: |
           sudo apt-get update
