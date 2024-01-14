@@ -54,6 +54,9 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Wait for Release
+        run: sleep 30 # Adjust the delay time as needed
+
       - name: Set Tag Name Output
         id: set_tag_name
         run: echo "TAG_NAME=v${{ github.sha }}" >> $GITHUB_ENV
