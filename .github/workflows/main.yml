@@ -29,10 +29,10 @@ jobs:
             hub release delete $release
           done
 
-          # Delete all tags
+          # Delete all tags using GitHub API
           tags=$(git tag -l)
           for tag in $tags; do
-            git push origin --delete $tag
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$tag"
           done
 
       - name: Install TeX Live and XeLaTeX
